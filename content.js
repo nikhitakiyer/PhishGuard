@@ -18,7 +18,9 @@ function getEmailData() {
   console.log("Sender:", sender);
   console.log("Body:", body);
 
-  return { subject, sender, body };
+  const emailData = { subject, sender, body };
+  analyzeWithClaude(emailData);
+  return emailData;
 }
 
 const observer = new MutationObserver(() => {
@@ -31,3 +33,16 @@ observer.observe(document.body, {
   childList: true,
   subtree: true
 });
+
+function analyzeWithClaude(emailData) {
+  chrome.runtime.sendMessage(
+    { type: "ANALYZE_EMAIL", data: emailData },
+    (response) => {
+      if (response.error) {
+        console.log("Error:", response.error);
+      } else {
+        console.log("Claude's analysis:", response.result);
+      }
+    }
+  );
+}
