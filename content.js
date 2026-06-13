@@ -18,13 +18,21 @@ function getEmailData() {
   console.log("Sender:", sender);
   console.log("Body:", body);
 
-  const emailData = { subject, sender, body };
-  analyzeWithClaude(emailData);
-  return emailData;
+  return { subject, sender, body };
 }
 
+let currentEmailId = null;
+
 const observer = new MutationObserver(() => {
-  // scanning is on demand only
+  const emailBody = document.querySelector("div.a3s");
+  if (emailBody) {
+    const emailId = emailBody.id || emailBody.getAttribute("id") || emailBody.innerText.slice(0, 50);
+    if (emailId !== currentEmailId) {
+      currentEmailId = emailId;
+      scanComplete = false;
+      skipActive = false;
+    }
+  }
 });
 
 observer.observe(document.body, {
@@ -49,6 +57,7 @@ function analyzeWithClaude(emailData) {
 let popup = null;
 let scanRequested = false;
 let skipActive = false;
+let scanComplete = false;
 
 function createPopup(targetElement) {
   removePopup();
@@ -92,11 +101,11 @@ function createPopup(targetElement) {
   document.body.appendChild(popup);
 
   document.getElementById("phishguard-scan").addEventListener("click", () => {
-    removePopup();
-    scanRequested = true;
-    const emailData = getEmailData();
-    analyzeWithClaude(emailData);
-  });
+  removePopup();
+  scanComplete = true;
+  const emailData = getEmailData();
+  analyzeWithClaude(emailData);
+});
 
   document.getElementById("phishguard-skip").addEventListener("click", () => {
   skipActive = true;
@@ -120,7 +129,7 @@ function setupLinkHover() {
     const emailBody = document.querySelector("div.a3s");
     if (!emailBody || !emailBody.contains(link)) return;
 
-   if (!skipActive) createPopup(link);
+   if (!skipActive && !scanComplete) createPopup(link);
   });
 
   document.addEventListener("mouseout", (e) => {
