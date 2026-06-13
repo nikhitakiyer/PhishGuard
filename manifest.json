@@ -12,12 +12,13 @@
     "https://api.anthropic.com/*"
   ],
   "content_scripts": [
-    {
-      "matches": ["https://mail.google.com/*"],
-      "js": ["content.js"],
-      "run_at": "document_idle"
-    }
-  ],
+  {
+    "matches": ["https://mail.google.com/*"],
+    "js": ["content.js"],
+    "css": ["styles.css"],
+    "run_at": "document_idle"
+  }
+],
   "background": {
     "service_worker": "background.js"
   },

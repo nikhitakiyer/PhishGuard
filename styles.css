@@ -1,0 +1,40 @@
+#phishguard-banner {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  padding: 10px 14px !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 13px !important;
+  border-bottom: 0.5px solid #e0e0e0 !important;
+  margin-bottom: 8px !important;
+  border-radius: 6px !important;
+}
+
+#phishguard-banner.pg-safe { background: #e6f4ea !important; border-color: #a8d5b5 !important; }
+#phishguard-banner.pg-warn { background: #fff8e1 !important; border-color: #ffe082 !important; }
+#phishguard-banner.pg-risk { background: #fce8e6 !important; border-color: #f5c6c2 !important; }
+
+.pg-badge {
+  width: 36px !important; height: 36px !important;
+  border-radius: 8px !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  font-size: 14px !important; font-weight: 600 !important;
+  flex-shrink: 0 !important;
+}
+
+.pg-safe .pg-badge { background: #c6e6cc !important; color: #1e6e34 !important; }
+.pg-warn .pg-badge { background: #fff0b3 !important; color: #8a6500 !important; }
+.pg-risk .pg-badge { background: #fad2cf !important; color: #c5221f !important; }
+
+.pg-body { flex: 1 !important; min-width: 0 !important; }
+.pg-label { font-weight: 600 !important; display: block !important; }
+.pg-safe .pg-label { color: #1e6e34 !important; }
+.pg-warn .pg-label { color: #8a6500 !important; }
+.pg-risk .pg-label { color: #c5221f !important; }
+.pg-calm { font-size: 12px !important; color: #555 !important; margin-top: 3px !important; line-height: 1.5 !important; display: block !important; }
+.pg-flags { margin-top: 8px !important; padding-top: 8px !important; border-top: 0.5px solid rgba(0,0,0,0.1) !important; }
+.pg-pills { display: flex !important; flex-wrap: wrap !important; gap: 5px !important; margin-bottom: 6px !important; }
+.pg-pill { font-size: 11px !important; padding: 2px 8px !important; border-radius: 99px !important; }
+.pg-risk .pg-pill { background: #fad2cf !important; color: #c5221f !important; }
+.pg-warn .pg-pill { background: #fff0b3 !important; color: #8a6500 !important; }
+.pg-explain { font-size: 12px !important; color: #555 !important; line-height: 1.5 !important; }

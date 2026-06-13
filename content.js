@@ -24,9 +24,7 @@ function getEmailData() {
 }
 
 const observer = new MutationObserver(() => {
-  if (document.querySelector("div.a3s")) {
-    getEmailData();
-  }
+  // scanning is on demand only
 });
 
 observer.observe(document.body, {
@@ -41,7 +39,8 @@ function analyzeWithClaude(emailData) {
       if (response.error) {
         console.log("Error:", response.error);
       } else {
-        console.log("Claude's analysis:", response.result);
+       console.log("Claude's analysis:", response.result);
+        showBanner(response.result);
       }
     }
   );
@@ -134,3 +133,74 @@ function setupLinkHover() {
 }
 
 setupLinkHover();
+
+function calculateScore(flags) {
+  const weights = {
+    "domain spoofing": -40,
+    "homoglyph": -35,
+    "link mismatch": -30,
+    "requests credentials": -25,
+    "requests sensitive info": -25,
+    "urgency language": -20,
+    "fear induction": -20,
+    "failed spf dkim": -20,
+    "artificial deadline": -15,
+    "threat of loss": -15,
+    "authority manipulation": -15,
+    "first time sender": -10,
+    "unexpected attachment": -10,
+    "unusual request": -10,
+  };
+  let score = 100;
+  flags.forEach(flag => {
+    const key = flag.toLowerCase();
+    for (const [w, val] of Object.entries(weights)) {
+      if (key.includes(w)) { score += val; break; }
+    }
+  });
+  return Math.max(0, Math.min(100, score));
+}
+
+function showBanner(result) {
+  document.getElementById("phishguard-banner")?.remove();
+
+  const score = calculateScore(result.flags);
+  const isRisk = score < 35;
+  const isWarn = score >= 35 && score < 70;
+  const levelClass = isRisk ? "pg-risk" : isWarn ? "pg-warn" : "pg-safe";
+  const label = isRisk ? "Proceed carefully" : isWarn ? "Worth a closer look" : "No major concerns";
+  const calmText = isRisk
+    ? "Take a breath — this email wants you to act fast. It can wait 10 minutes."
+    : isWarn
+    ? "A few things caught our attention. No need to panic, just take a look."
+    : "Nothing suspicious detected.";
+
+  const banner = document.createElement("div");
+  banner.id = "phishguard-banner";
+  banner.className = `phishguard-banner ${levelClass}`;
+  banner.innerHTML = `
+    <div class="pg-badge">${score}</div>
+    <div class="pg-body">
+      <div class="pg-label">${label}</div>
+      <div class="pg-calm">${calmText}</div>
+      ${result.flags.length > 0 ? `
+        <div class="pg-flags">
+          <div class="pg-pills">
+            ${result.flags.map(f => `<span class="pg-pill">${f}</span>`).join("")}
+          </div>
+          <div class="pg-explain">${result.explanation}</div>
+        </div>
+      ` : ""}
+    </div>
+  `;
+
+  const emailBody = document.querySelector("div.a3s");
+  console.log("Email body found:", emailBody);
+  if (emailBody) {
+    emailBody.parentElement.insertBefore(banner, emailBody);
+    console.log("Banner inserted!");
+  } else {
+    console.log("Could not find email body to insert banner");
+    document.body.prepend(banner);
+  }
+}
